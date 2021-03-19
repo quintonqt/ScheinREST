@@ -1,6 +1,6 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import Person from './Person';
-import { findErrorFields } from './utils';
+import { findErrorFields } from './ErrorCheckUtil';
 
 const app = express();
 const port = 8080; // default port to listen
@@ -10,6 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 
 const persons: Map<number, Person> = new Map<number, Person>();
 
+/**
+ * Returns a list of all persons in the app
+ */
 app.get('/person', (req, res) => {
   const personList: Person[] = [];
   persons.forEach((value) => {
@@ -18,6 +21,9 @@ app.get('/person', (req, res) => {
   res.status(200).send(personList);
 });
 
+/**
+ * Returns the single person associated with the SSN, if they exist.
+ */
 app.get('/person/:socialSecurityNumber', (req, res) => {
   const socialSecurityNumber = parseInt(req.params.socialSecurityNumber, 10);
   if (persons.has(socialSecurityNumber)) {
@@ -27,6 +33,9 @@ app.get('/person/:socialSecurityNumber', (req, res) => {
   }
 });
 
+/**
+ * Creates a new person and returns that person as JSON.
+ */
 app.post('/person', (req, res) => {
   const personData = req.body;
   const errorMessage = findErrorFields(personData);
@@ -50,6 +59,10 @@ app.post('/person', (req, res) => {
   res.status(201).send(personData);
 });
 
+/**
+ * Updates an existing person with the associated SSN
+ * and returns the updated person as JSON.
+ */
 app.put('/person/:socialSecurityNumber', (req, res) => {
   const socialSecurityNumber = parseInt(req.params.socialSecurityNumber, 10);
   const personData = {
@@ -76,6 +89,9 @@ app.put('/person/:socialSecurityNumber', (req, res) => {
   res.status(200).send(newPerson);
 });
 
+/**
+ * Deletes the existing person with the associated SSN.
+ */
 app.delete('/person/:socialSecurityNumber', (req, res) => {
   const socialSecurityNumber = parseInt(req.params.socialSecurityNumber, 10);
   const isDeleted = persons.delete(socialSecurityNumber);
@@ -88,12 +104,16 @@ app.delete('/person/:socialSecurityNumber', (req, res) => {
         );
 });
 
+app.get('*', (req, res) => (
+  res.status(404).send('404 Not Found')
+))
+
 // start the Express server
 app.listen(port, () => {
   // tslint:disable-next-line:no-console
   console.log(`server started at http://localhost:${port}`);
 });
 
-app.use((err, req, res, next) => (
+app.use((err: any, req: any, res: any, next: NextFunction) => (
   res.status(500).send('An unknown error has occurred!')
 ))
