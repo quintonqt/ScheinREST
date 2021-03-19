@@ -1,11 +1,17 @@
-class Person implements Person{
+class Person {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
   emailAddress: string;
   socialSecurityNumber: number;
 
-  constructor(person: {firstName: string, lastName: string, dateOfBirth: string, emailAddress: string, socialSecurityNumber: number}) {
+  constructor(person: {
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string;
+    emailAddress: string;
+    socialSecurityNumber: number;
+  }) {
     this.firstName = person.firstName;
     this.lastName = person.lastName;
     this.dateOfBirth = person.dateOfBirth;

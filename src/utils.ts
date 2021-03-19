@@ -1,10 +1,4 @@
-interface Person {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  emailAddress: string;
-  socialSecurityNumber: number;
-}
+import Person from './Person';
 
 function getEmptyFields(body: object) {
   const emptyFields: string[] = [];
@@ -33,6 +27,10 @@ export function findErrorFields(personData: Person) {
 
   if (emptyFields.length) {
     message = 'Missing the following fields:' + emptyFields;
+  } else if (typeof personData.firstName !== 'string') {
+    message = 'Please provide a valid first name.';
+  } else if (typeof personData.lastName !== 'string') {
+    message = 'Please provide a valid last name.';
   } else if (isInvalidDate(personData.dateOfBirth)) {
     message =
       personData.dateOfBirth +
@@ -42,7 +40,7 @@ export function findErrorFields(personData: Person) {
       personData.emailAddress +
       ' is not a valid email. Please provide a valid one.';
   } else if (
-    typeof socialSecurityNumber === 'number' &&
+    typeof socialSecurityNumber !== 'number' ||
     socialSecurityNumber.toString().length !== 9
   ) {
     message =
